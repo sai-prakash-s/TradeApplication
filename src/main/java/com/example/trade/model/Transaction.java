@@ -1,41 +1,42 @@
 package com.example.trade.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
 
-    @ManyToOne
-    @JoinColumn(name = "box_id")
-    private Box box;
+    private Long boxId;
 
-    @ManyToOne
-    @JoinColumn(name = "from_customer_id")
-    private Customer fromCustomer;
+    private Long fromCustomerId;
 
-    @ManyToOne
-    @JoinColumn(name = "to_customer_id")
-    private Customer toCustomer;
+    private Long toCustomerId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    private String transactionType; // Full Transaction/Partial Transaction
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType; // Full Transaction/Partial Transaction
 
-    private int transferredQuantity;
+    private BigDecimal transferredQuantity;
 
-    private int remainingQuantity;
+    private BigDecimal remainingQuantity;
 
     private String comment;
 
-    // Constructors, getters, setters, etc.
+    @PrePersist
+    public void prePersist() {
+        this.timestamp = new Date();
+    }
 }
 
